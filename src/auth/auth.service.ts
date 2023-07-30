@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { LoginDto, RegisterDto } from "./dto";
 import { UserService } from "@user/user.service";
 import { Tokens } from "./interfaces";
@@ -17,7 +17,17 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly prismaService: PrismaService,
   ) {}
+
   async register(dto: RegisterDto) {
+    const user = await this.userService.findOne(dto.email).catch((err) => {
+      this.logger.error(err);
+      return null;
+    });
+
+    if (user) {
+      throw new ConflictException("Пользователь с таким email уже зарегистрирован");
+    }
+
     return this.userService.save(dto).catch((err) => {
       this.logger.error(err);
       return null;
@@ -34,11 +44,13 @@ export class AuthService {
       throw new UnauthorizedException("Не верный логин или пароль");
     }
 
-    const accessToken = this.jwtService.sign({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const accessToken =
+      "Bearer " +
+      this.jwtService.sign({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
 
     const refreshToken = await this.getRefreshToken(user.id);
 
