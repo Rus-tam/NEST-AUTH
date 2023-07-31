@@ -18,6 +18,17 @@ export class AuthService {
     private readonly prismaService: PrismaService,
   ) {}
 
+  async refreshTokens(refreshToken: string): Promise<Tokens> {
+    const token = await this.prismaService.token.delete({ where: { token: refreshToken } });
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userService.findOne(token.userId);
+
+    return this.generateTokens(user);
+  }
+
   async register(dto: RegisterDto) {
     const user = await this.userService.findOne(dto.email).catch((err) => {
       this.logger.error(err);
@@ -44,6 +55,10 @@ export class AuthService {
       throw new UnauthorizedException("Не верный логин или пароль");
     }
 
+    return this.generateTokens(user);
+  }
+
+  private async generateTokens(user: User): Promise<Tokens> {
     const accessToken =
       "Bearer " +
       this.jwtService.sign({
