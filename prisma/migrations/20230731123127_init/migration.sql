@@ -13,6 +13,7 @@ CREATE TABLE "tokens" (
     "token" TEXT NOT NULL,
     "exp" DATETIME NOT NULL,
     "userId" TEXT NOT NULL,
+    "userAgent" TEXT NOT NULL,
     CONSTRAINT "tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
