@@ -5,19 +5,19 @@ import {
   Get,
   HttpStatus,
   Post,
-  Req,
   Res,
   UnauthorizedException,
 } from "@nestjs/common";
 import { LoginDto, RegisterDto } from "./dto";
 import { AuthService } from "./auth.service";
 import { Tokens } from "./interfaces";
-import { Response, Request } from "express";
+import { Response } from "express";
 import { ConfigService } from "@nestjs/config";
-import { Cookie, UserAgent } from "@common/common/decorators";
+import { Cookie, Public, UserAgent } from "@common/common/decorators";
 
 const REFRESH_TOKEN = "refreshtoken";
 
+@Public()
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {}
