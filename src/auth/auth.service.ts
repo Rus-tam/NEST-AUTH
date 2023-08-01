@@ -75,25 +75,38 @@ export class AuthService {
   }
 
   private async getRefreshToken(userId: string, agent: string): Promise<Token> {
-    const _token = await this.prismaService.token.findFirst({
-      where: {
+    // const _token = await this.prismaService.token.findFirst({
+    //   where: {
+    //     userId,
+    //     userAgent: agent,
+    //   },
+    // });
+    // console.log("FFFFFFFFFFFF", _token);
+    // const token = _token?.token ?? null;
+    // return this.prismaService.token.upsert({
+    //   where: { token },
+    //   update: {
+    //     token: v4(),
+    //     exp: add(new Date(), { months: 1 }),
+    //   },
+    //   create: {
+    //     token: v4(),
+    //     exp: add(new Date(), { months: 1 }),
+    //     userId,
+    //     userAgent: agent,
+    //   },
+    // });
+    return this.prismaService.token.create({
+      data: {
+        token: v4(),
+        exp: add(new Date(), { months: 1 }),
         userId,
         userAgent: agent,
       },
     });
-    const token = _token?.token ?? null;
-    return this.prismaService.token.upsert({
-      where: { token },
-      update: {
-        token: v4(),
-        exp: add(new Date(), { months: 1 }),
-      },
-      create: {
-        token: v4(),
-        exp: add(new Date(), { months: 1 }),
-        userId,
-        userAgent: agent,
-      },
-    });
+  }
+
+  deleteRefreshToken(token: string) {
+    return this.prismaService.token.delete({ where: { token } });
   }
 }
