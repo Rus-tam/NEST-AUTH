@@ -14,7 +14,7 @@ CREATE TABLE "tokens" (
     "exp" DATETIME NOT NULL,
     "userId" TEXT NOT NULL,
     "userAgent" TEXT NOT NULL,
-    CONSTRAINT "tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
